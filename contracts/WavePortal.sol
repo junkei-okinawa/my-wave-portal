@@ -23,8 +23,8 @@ contract WavePortal {
      */
     Wave[] waves;
 
-    constructor() {
-        console.log("WavePortal - Smart Contract!");
+    constructor() payable {
+        console.log("We have been constructed!");
     }
 
     /*
@@ -42,6 +42,16 @@ contract WavePortal {
          * コントラクト側でemitされたイベントに関する通知をフロントエンドで取得できるようにする。
          */
         emit NewWave(msg.sender, block.timestamp, _message);
+        /*
+         * 「👋（wave）」を送ってくれたユーザーに0.0001ETHを送る
+         */
+        uint256 prizeAmount = 0.0001 ether;
+        require(
+            prizeAmount <= address(this).balance,
+            "Trying to withdraw more money than the contract has."
+        );
+        (bool success, ) = (msg.sender).call{value: prizeAmount}("");
+        require(success, "Failed to withdraw money from contract.");
     }
 
     /*
